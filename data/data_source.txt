@@ -1,0 +1,6 @@
+Given below is the link for dataset used in this project:
+
+https://www.kaggle.com/datasets/zusmani/pakistans-largest-ecommerce-dataset
+
+
+Download it locally and save under the data folder of this project and then run the main program.
