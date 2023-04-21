@@ -1,3 +1,4 @@
+
 import datetime
 import sv_ttk
 import tkinter as tk
@@ -7,90 +8,208 @@ from tkinter import messagebox
 import pandas as pd
 from tkcalendar import DateEntry
 import customtkinter
+data = [("1001", "Pending", "2022-01-01", "SKU001", "10.00", "2", "20.00", "Clothing", "Credit Card", "CUST001"),
+                ("1002", "Shipped", "2022-01-02", "SKU002", "20.00", "1", "20.00", "Electronics", "Paypal", "CUST002"),
+                ("1003", "Delivered", "2022-01-03", "SKU003", "5.00", "3", "15.00", "Toys", "Credit Card", "CUST003"),
+                ("1004", "Pending", "2022-01-04", "SKU004", "15.00", "2", "30.00", "Home & Kitchen", "Paypal", "CUST004"),
+                ("1005", "Delivered", "2022-01-05", "SKU005", "25.00", "1", "25.00", "Jewelry", "Credit Card", "CUST005")]
 
+       
+        
 class GUI:
     def __init__(self):
-        self.window = tk.Tk()
-        self.window.title("E-Commerce Dataset Search")
-        self.window.geometry("800x600")
+        # Create the main window
+    
+        #self.category_var = tk.StringVar()
+        self.start_date_var = DateEntry()
+        self.end_date_var = DateEntry()
+        self.search_term_var = tk.StringVar()
 
-        # Search Criteria Frame
-        criteria_frame = tk.LabelFrame(self.window, text="Search Criteria")
-        criteria_frame.pack(padx=10, pady=10, fill="both", expand=True)
 
-        # Property Type Label and Combobox
-        property_type_label = tk.Label(criteria_frame, text="Property Type:")
-        property_type_label.grid(row=0, column=0, padx=5, pady=5)
+        self.root = tk.Tk()
+        #self.root.geometry("800x600")
+        self.root.title("Sales Dashboard")
+        customtkinter.set_appearance_mode("black")
+        customtkinter.set_default_color_theme("dark-blue")
+        # Set the default theme for all widgets
+        self.bg_color = "#F5F5F5"
+        self.fg_color = "#333333"
+        self.accent_color = "#00A0D2"
+        self.font_family = "Sens serif"
+        self.font_size = 10
+        # Create a frame for the search field and category filter
+        # # # Create the top frame for search and category selection
+        # # top_frame = ttk.Frame(root, padding="30 15 30 0")
+        
+        # Create a label and entry field for the search term
+        #search results frame 
+        criteria_frame = tk.LabelFrame(self.root, text="Search Criteria")
+        criteria_frame.pack(side="left", fill="y", padx=15, pady=15)
 
-        property_type_values = ["Apartment", "House", "Condominium", "Townhouse", "Loft", "Other"]
-        self.property_type_combobox = ttk.Combobox(criteria_frame, values=property_type_values)
-        self.property_type_combobox.grid(row=0, column=1, padx=5, pady=5)
-        self.property_type_combobox.current(0)
+        # search_results_frame = tk.LabelFrame(self.root, text = "Search Results")
+        # search_results_frame.pack(side=tk.TOP, padx=15, pady=0, fill=tk.X)
+        search_label = customtkinter.CTkLabel(criteria_frame, text="Order ID: ")
+        search_label.grid(row=0, column=0, padx=5, pady=5)
+        self.search_entry = ttk.Entry(criteria_frame, width=15)
+        self.search_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        # Price Range Label and Entry
-        price_range_label = tk.Label(criteria_frame, text="Price Range:")
-        price_range_label.grid(row=1, column=0, padx=5, pady=5)
+        # Create a label and dropdown menu for category selection
+        category_label = customtkinter.CTkLabel(criteria_frame, text="Category: ")
+        category_label.grid(row=0, column=2, padx=5, pady=5)
+        category_var=tk.StringVar()
+        
+        category_choices = ["All", "Fashion", "Electronics", "Appliances"]
+        category_dropdown = ttk.OptionMenu(criteria_frame, category_var, *category_choices)
+        category_dropdown.grid(row=0, column=3, padx=5, pady=5)
 
-        self.min_price_entry = tk.Entry(criteria_frame)
-        self.min_price_entry.grid(row=1, column=1, padx=5, pady=5)
+        # Create a frame for the filter options
+        # sidebar_frame = ttk.Frame(self.root, padding="30 15 30 0")
+        # sidebar_frame.pack(fill="y", side="left")
 
-        dash_label = tk.Label(criteria_frame, text="-")
-        dash_label.grid(row=1, column=2, padx=5, pady=5)
+        # Create a label and entry fields for start and end date filters
+        # start_date_label = ttk.Label(sidebar_frame, text="Start Date: ")
+        # start_date_label.grid(row=0, column=0, sticky="w")
+        # start_date_entry = DateEntry(sidebar_frame, textvariable=self.start_date_var)
+        # start_date_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        self.max_price_entry = tk.Entry(criteria_frame)
-        self.max_price_entry.grid(row=1, column=3, padx=5, pady=5)
+        # end_date_label = ttk.Label(sidebar_frame, text="End Date: ")
+        # end_date_label.grid(row=1,column=0, sticky="w")
+        # entry = DateEntry(sidebar_frame,textvariable= self.end_date_var)
+        # entry.grid(row=1,column=1, padx=5,pady=5)
 
-        # Search Button
-        search_button = tk.Button(criteria_frame, text="Search", command=self.search)
-        search_button.grid(row=2, column=0, columnspan=2, padx=5, pady=5)
+        price_label = customtkinter.CTkLabel(criteria_frame, text="Price: ")
+        price_label.grid(row=5, column=0, padx=5, pady=5)
+        self.min_price_entry = ttk.Entry(criteria_frame, width=15)
+        self.min_price_entry.grid(row=5, column=1, padx=5, pady=5)
 
-        # Search Results Frame
-        results_frame = tk.LabelFrame(self.window, text="Search Results")
+        dash_label = customtkinter.CTkLabel(criteria_frame, text="-")
+        dash_label.grid(row=5, column=2, padx=5, pady=5)
+
+        max_price_entry = ttk.Entry(criteria_frame, width=15)
+        max_price_entry.grid(row=5, column=3, padx=5, pady=5)
+
+        # Create a frame for the table and visualization
+        results_frame = tk.LabelFrame(self.root, text="Search Results" , padx=10, pady=10)
         results_frame.pack(padx=10, pady=10, fill="both", expand=True)
 
-        # Search Results Table
-        self.results_table = ttk.Treeview(results_frame, columns=("id", "name", "host_name", "neighbourhood", "room_type", "price"), show="headings")
-        self.results_table.column("id", width=50, anchor="center")
-        self.results_table.column("name", width=200, anchor="center")
-        self.results_table.column("host_name", width=150, anchor="center")
-        self.results_table.column("neighbourhood", width=150, anchor="center")
-        self.results_table.column("room_type", width=150, anchor="center")
-        self.results_table.column("price", width=100, anchor="center")
+        # Create a table to display the search results
+        table_columns = ("Order ID", "Order Status", "Date of Order", "SKU", "Price",
+                        "Quantity", "Grand Total", "Category", "Payment Method", "Customer ID")
+        self.table = ttk.Treeview(results_frame, columns=table_columns, show="headings" ,padding="5 5 5 5")
+        for column in table_columns:
+            self.table.heading(column, text=column)
+        self.table.pack(side="left", fill="both", expand=True)
 
-        self.results_table.heading("id", text="ID")
-        self.results_table.heading("name", text="Name")
-        self.results_table.heading("host_name", text="Host Name")
-        self.results_table.heading("neighbourhood", text="Neighbourhood")
-        self.results_table.heading("room_type", text="Room Type")
-        self.results_table.heading("price", text="Price")
+        # Fill data in the table
+        for row in data:
+            self.table.insert("", tk.END, values=row)
 
-        self.results_table.pack(fill="both", expand=True)
+        # Create a scrollbar for the table
 
+        #create vertical scrollbar
+
+
+        # table_scroll_y = tk.Scrollbar(self.root, orient="vertical", command=table.yview)
+        # table_scroll_y.pack(side="right", fill="y")
+        # table.configure(yscrollcommand=table_scroll_y.set)
+        # table.pack(side="left",fill="both", expand=True)
+        # table_scroll_y.config(command=table.yview)
+        # # Create a scrollbar for the table
+        table_scroll_x = tk.Scrollbar(self.root, orient="horizontal", command=self.table.xview)
+        table_scroll_x.pack(side="bottom", fill="x", padx=5, pady=5)
+        self.table.configure(xscrollcommand=table_scroll_x.set)
+
+        # scrollbar = Scrollbar(self.root)
+        # scrollbar.pack( side = RIGHT, fill = Y )
+        # mylist = Listbox(self.root, yscrollcommand = scrollbar.set )
+        # for line in range(100):
+        #    mylist.insert(END, 'This is line number' + str(line))
+        # mylist.pack( side = LEFT, fill = BOTH )
+        # scrollbar.config( command = mylist.yview )
+        # mainloop()
+
+        
+        # Create a button for the search
+        search_button = ttk.Button(criteria_frame, text="Search", width=10, command=self.search_orderid)
+        search_button.grid(row=9, column=1, padx=10, pady=10)
+        # report_button = ttk.Button(sidebar_frame, text="Generate Report", command=self.generate_report,width=15)
+        # report_button.grid(row=9, column=1, padx=10, pady=10)
+
+    
+        # Set the default style for all widgets
+        style = ttk.Style(self.root)
+        style.theme_use("clam")
+        style.configure(".", font=(self.font_family, self.font_size), foreground=self.fg_color, background=self.bg_color)
+        style.configure("TButton", padding=6, relief="flat", foreground=self.fg_color, background=self.accent_color, font=(self.font_family, self.font_size, "bold"))
+        style.map("TButton", background=[("active", "#0081A7")])
+        style.configure("TLabel", padding=5)
+        style.configure("TEntry", padding=5, relief="flat", foreground="0000", background=self.bg_color, font=(self.font_family, self.font_size, "bold"))
+        style.configure("TCombobox", padding=5, relief="flat", foreground=self.fg_color, background=self.bg_color)
+        style.configure("Treeview", padding=5, relief="flat", foreground=self.fg_color, background=self.bg_color)
+        style.configure("Treeview.Heading", font=(self.font_family, self.font_size, "bold"), background=self.accent_color, foreground=self.bg_color)
+    def search_orderid(self):
+        #print("Searching for order ID")
+        #order_id_var = search_term_var.get()
+        #print(self.search_entry.get())
+        #order_id = int(order_id_var)
+        order_id_var = str(self.search_entry.get())
+
+        print((order_id_var))
+        if order_id_var == "":
+            messagebox.showerror("Error", "Please enter an order ID")
+        else:
+            order_id = (order_id_var)
+
+        #"Order Status", "Date of Order", "SKU", "Price","Quantity", "Grand Total", "Category", "Payment Method", "Customer ID" of that order id
+        # if not order_id_var:
+        #     messagebox.showerror("Error", "Please enter an order ID")
+        #     return
+        # else:
+            df = pd.DataFrame(data, columns=["Order ID", "Order Status", "Date of Order", "SKU", "Price", "Quantity", "Grand Total", "Category", "Payment Method", "Customer ID"])
+            order_data = df[df["Order ID"] == (order_id)]
+            if order_data.empty:
+                messagebox.showerror("Error", f"Order ID {order_id} not found")
+                return
+            for i in self.table.get_children():
+                self.table.delete(i)
+            for index, row in order_data.iterrows():
+                self.table.insert("", tk.END, values=(row["Order ID"], row["Order Status"], row["Date of Order"], row["SKU"], row["Price"], row["Quantity"], row["Grand Total"], row["Category"], row["Payment Method"], row["Customer ID"]))
+    def price_range(self, min_price, max_price):
+        min_price = min_price.get()
+        max_price = max_price.get()
+        if min_price == "" or max_price == "":
+            messagebox.showerror("Error", "Please enter a price range")
+        else:
+            df = pd.DataFrame(data)
+            price_data = df[(df["price"] >= min_price) & (df["price"] <= max_price)]
+            print(price_data)
+
+    def intersection_of_result(self, order_id, min_price, max_price):
+        order_id = order_id.get()
+        min_price = min_price.get()
+        max_price = max_price.get()
+        if order_id == "" or min_price == "" or max_price == "":
+            messagebox.showerror("Error", "Please enter a price range")
+
+        else:   
+            df = pd.DataFrame(data)
+            order_data = df[df["order_id"] == order_id]
+            price_data = df[(df["price"] >= min_price) & (df["price"] <= max_price)]
+            #print(order_data)
+            #print(price_data)
+            result = pd.merge(order_data, price_data, how='inner', on=['order_id'])
+            print(result)
+        #print 
+        # Create a frame for the main content
+        #df = pd.read_csv("data.csv")
     def run(self):
-        self.window.mainloop()
-
-    def search(self):
-        # Get search criteria
-        property_type = self.property_type_combobox.get()
-        min_price = int(self.min_price_entry.get()) if self.min_price_entry.get() else 0
-        max_price = int(self.max_price_entry.get()) if self.max_price_entry.get() else 1000000
-
-        # Load listings data
-        listings = pd.read_csv("listings.csv")
-
-        # Filter listings data
-        listings = listings[listings["room_type"] == property_type]
-        listings = listings[listings["price"] >= min_price] 
-        listings = listings[listings["price"] <= max_price]
-
-        # Clear table
-        for record in self.results_table.get_children():
-            self.results_table.delete(record)
-
-        # Insert filtered listings into table
-        for index, row in listings.iterrows():
-            self.results_table.insert("", "end", values=(row["id"], row["name"], row["host_name"], row["neighbourhood"], row["room_type"], row["price"]))
-
+        self.root.mainloop()
 if __name__ == "__main__":
-    gui = GUI()
-    gui.run()
+    #create object
+
+    app = GUI()
+    app.run()
+    
+
+
+
