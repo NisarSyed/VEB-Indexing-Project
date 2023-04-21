@@ -71,6 +71,11 @@ class Index:
 
 if __name__ == "__main__":
     app = Index('data\Pakistan Largest Ecommerce Dataset.csv')
-    result = app.rangeSearch('price', 0, 100)
-    print(result[['item_id', 'price']])
+    # result = app.rangeSearch('price', 0, 100)
+    # print(result[['item_id', 'price']])
+    gui  = GUI(app.data)
+    #app.rangeSearch('price', 0, 100)
+    gui.run()
+    
+    
     
