@@ -62,21 +62,6 @@ class GUI:
         category_dropdown = ttk.OptionMenu(criteria_frame, category_var, *category_choices)
         category_dropdown.grid(row=0, column=3, padx=5, pady=5)
 
-        # Create a frame for the filter options
-        # sidebar_frame = ttk.Frame(self.root, padding="30 15 30 0")
-        # sidebar_frame.pack(fill="y", side="left")
-
-        # Create a label and entry fields for start and end date filters
-        # start_date_label = ttk.Label(sidebar_frame, text="Start Date: ")
-        # start_date_label.grid(row=0, column=0, sticky="w")
-        # start_date_entry = DateEntry(sidebar_frame, textvariable=self.start_date_var)
-        # start_date_entry.grid(row=0, column=1, padx=5, pady=5)
-
-        # end_date_label = ttk.Label(sidebar_frame, text="End Date: ")
-        # end_date_label.grid(row=1,column=0, sticky="w")
-        # entry = DateEntry(sidebar_frame,textvariable= self.end_date_var)
-        # entry.grid(row=1,column=1, padx=5,pady=5)
-
         price_label = customtkinter.CTkLabel(criteria_frame, text="Price: ")
         price_label.grid(row=5, column=0, padx=5, pady=5)
         self.min_price_entry = ttk.Entry(criteria_frame, width=15)
