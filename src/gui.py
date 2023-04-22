@@ -55,12 +55,14 @@ class GUI:
 
         # search_results_frame = tk.LabelFrame(self.root, text = "Search Results")
         # search_results_frame.pack(side=tk.TOP, padx=15, pady=0, fill=tk.X)
-        search_label = customtkinter.CTkLabel(criteria_frame, text="Order ID: ")
+        search_label = customtkinter.CTkLabel(criteria_frame, text="Order ID Range: ")
         search_label.grid(row=0, column=0, padx=5, pady=5)
         self.min_search = ttk.Entry(criteria_frame, width=15)
+        self.dash = customtkinter.CTkLabel(criteria_frame, text="-")
+        self.dash.grid(row=0, column=2, padx=5, pady=5)
         self.min_search.grid(row=0, column=1, padx=5, pady=5)
         self.max_search = ttk.Entry(criteria_frame, width=15)
-        self.max_search.grid(row=0, column=2, padx=5, pady=5)
+        self.max_search.grid(row=0, column=3, padx=5, pady=5)
         #self.search_entry.grid(row=0, column=1, padx=5, pady=5)
 
         # Create a label and dropdown menu for category selection
@@ -72,7 +74,7 @@ class GUI:
         # category_dropdown = ttk.OptionMenu(criteria_frame, category_var, *category_choices)
         # category_dropdown.grid(row=1, column=3, padx=5, pady=5)
 
-        price_label = customtkinter.CTkLabel(criteria_frame, text="Price: ")
+        price_label = customtkinter.CTkLabel(criteria_frame, text="Price Range: ")
         price_label.grid(row=5, column=0, padx=5, pady=5)
         self.min_price_entry = ttk.Entry(criteria_frame, width=15)
         self.min_price_entry.grid(row=5, column=1, padx=5, pady=5)
@@ -129,9 +131,13 @@ class GUI:
         search_button.grid(row=1, column=1, padx=10, pady=10)
         
         # create a button for price range search 
-        price_range_button = ttk.Button(criteria_frame, text="Price Range", width=11, command=self.filter_search)
+        price_range_button = ttk.Button(criteria_frame, text="Price Range", width=11, command=self.search_by_price_range)
         price_range_button.grid(row=9, column=1, padx=10, pady=10)
 
+        # button for filter search 
+        filter_button = ttk.Button(criteria_frame, text="Filter", width=10, command=self.filter_search)
+        filter_button.grid(row=10, column=3, padx=10, pady=10)
+        
         # report_button = ttk.Button(sidebar_frame, text="Generate Report", command=self.generate_report,width=15)
         # report_button.grid(row=9, column=1, padx=10, pady=10)
 
@@ -180,22 +186,29 @@ class GUI:
         print("Searching by price range")
         print(self.min_price_entry.get())
         print(self.max_price_entry.get())
+        if self.min_price_entry.get() == "" or self.max_price_entry.get() == "":
+            messagebox.showerror("Error", "Please enter a price range")
+            return
+        else:
 
-        result = self.index.rangeSearch('price', float(self.min_price_entry.get()), float(self.max_price_entry.get()))
-        for i in self.table.get_children():
-            self.table.delete(i)
-        for index, row in result.iterrows():
-            self.table.insert("", tk.END, values=list(row))
+            result = self.index.rangeSearch('price', float(self.min_price_entry.get()), float(self.max_price_entry.get()))
+            for i in self.table.get_children():
+                self.table.delete(i)
+            for index, row in result.iterrows():
+                self.table.insert("", tk.END, values=list(row))
     def search_by_order_id_range(self):
         print("Searching by order id range")
         print(self.min_search.get())
         print(self.max_search.get())
-
-        result = self.index.rangeSearch('item_id', float(self.min_search.get()), float(self.max_search.get()))
-        for i in self.table.get_children():
-            self.table.delete(i)
-        for index, row in result.iterrows():
-            self.table.insert("", tk.END, values=list(row))
+        if self.min_search.get() == "" or self.max_search.get() == "":
+            messagebox.showerror("Error", "Please enter an order ID range")
+            return
+        else:
+            result = self.index.rangeSearch('item_id', float(self.min_search.get()), float(self.max_search.get()))
+            for i in self.table.get_children():
+                self.table.delete(i)
+            for index, row in result.iterrows():
+                self.table.insert("", tk.END, values=list(row))
 
     def filter_search(self):
         print("Filtering search results")
@@ -203,21 +216,28 @@ class GUI:
         print(self.max_search.get())
         print(self.min_price_entry.get())
         print(self.max_price_entry.get())
+        if self.min_search.get() == "" or self.max_search.get() == "":
+            messagebox.showerror("Error", "Please enter an order ID range")
+            return
+        else:
+        
+            
+            result1 = self.index.rangeSearch('item_id', float(self.min_search.get()), float(self.max_search.get()))
 
-        # Perform range search by item_id
-        result1 = self.index.rangeSearch('item_id', float(self.min_search.get()), float(self.max_search.get()))
+            # Perform range search by price
+            result2 = self.index.rangeSearch('price', float(self.min_price_entry.get()), float(self.max_price_entry.get()))
 
-        # Perform range search by price
-        result2 = self.index.rangeSearch('price', float(self.min_price_entry.get()), float(self.max_price_entry.get()))
+            # Merge the two results using inner join
+            result = pd.merge(result1, result2, how='inner')
+            if result.empty:
+                messagebox.showerror("Error", "No results found")
+                return
 
-        # Merge the two results using inner join
-        result = pd.merge(result1, result2, how='inner')
-
-        # Update the table in the GUI
-        for i in self.table.get_children():
-            self.table.delete(i)
-        for index, row in result.iterrows():
-            self.table.insert("", tk.END, values=list(row))
+            # Update the table in the GUI
+            for i in self.table.get_children():
+                self.table.delete(i)
+            for index, row in result.iterrows():
+                self.table.insert("", tk.END, values=list(row))
 
 
     # def test_range_search(self):
@@ -269,11 +289,15 @@ class GUI:
     #             self.table.delete(i)
     #         for index, row in price_data.iterrows():
     #             self.table.insert("", tk.END, values=list(row))
+    def sort_by_id(self):
+        print("Sorting by order ID")
+        result = self.index.sort('item_id')
+        for i in self.table.get_children():
+            self.table.delete(i)
+        for index, row in result.iterrows():
+            self.table.insert("", tk.END, values=list(row))
 
-    def search_of_result(self, order_id, min_price, max_price):
-
-        pass
-
+        
     def run(self):
         self.root.mainloop()
     #create object
