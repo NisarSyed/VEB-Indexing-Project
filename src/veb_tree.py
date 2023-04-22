@@ -1,5 +1,6 @@
 #Implementation of Van Emde Boas trees 
 import math
+from typing import List
 
 class VEBTree(object):
     def __init__(self,u: int) -> None:
@@ -178,6 +179,7 @@ class VEBTree(object):
     
     def __repr__(self) -> str:
         return self.__str__()
+    
     
 # # # Test cases 
 
