@@ -20,6 +20,7 @@ class Index:
         
         if os.path.exists("priceIndex"):
             self.priceIndex = pickle.load(open("priceIndex", "rb"))
+            #self.get_sorted_indices(self.priceIndex, 'price')
         else:
             self.priceIndex = self.createIndex('price', self.data)
             pickle.dump(self.priceIndex, open("priceIndex", "wb"))
@@ -68,9 +69,44 @@ class Index:
             start = next_item
         return result
 
+    # def sort(self, attribute: str) -> pd.DataFrame:
+    #     return self.data.sort_values(by=[attribute], ascending=False)
+    
+    def successor1(self, attribute: str, value: int) :
+       
+        if attribute == 'item_id':
+            index = self.itemIDIndex
+        elif attribute == 'price':
+            index = self.priceIndex
+        
+        return self.data[self.data[attribute] == index.successor(value)]
+    
+    def check(self):
+        # check whether the order id is present in the data or not
+        # if present then return the data
+        # else return false
+        pass
+    def get_sorted_indices(self, indices: List[int], sort_by: str) -> List[int]:
+        if sort_by == 'item_id':
+            indices = list(indices)
+            sorted_indices = sorted(indices, key=lambda x: self.data[sort_by][x])
+            print(sorted_indices)
+            return sorted_indices
+        elif sort_by == 'price':    
+            indices = list(indices)
+            sorted_indices = sorted(indices, key=lambda x: self.data[sort_by][x], reverse=True)
+            print(sorted_indices)
+            return sorted_indices
 
 if __name__ == "__main__":
     app = Index('data\Pakistan Largest Ecommerce Dataset.csv')
-    result = app.rangeSearch('price', 0, 100)
-    print(result[['item_id', 'price']])
+    # result = app.rangeSearch('price', 0, 100)
+    # print(result[['item_id', 'price']])
+    gui  = GUI(app.data)
+    gui.run()
+    
+    #app.rangeSearch('price', 0, 100)
+    
+    
+    
     
